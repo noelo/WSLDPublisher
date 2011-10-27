@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<jbossesb parameterReloadSecs="5"
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.3.0.xsd">
+	<providers>
+		<http-provider name="HTTPProv">
+			<http-bus busid="CHAN1" transportGuarantee="NONE">
+				<protected-methods>
+					<method name="POST" />
+					<method name="GET" />
+				</protected-methods>
+			</http-bus>
+		</http-provider>
+	</providers>
+	<services>
+		<service category="TestCAT" description="Test Service for SOAPProcessor"
+			invmScope="GLOBAL" name="TestService">
+			<listeners>
+				<http-gateway busidref="CHAN1" name="GW1" payloadAs="STRING"  />
+			</listeners>
+			<actions mep="RequestResponse">
+				<action class="com.redhat.gps.WSDLPublishAction" name="Loader">
+					<property name="wsdl" value="internal://jboss.ws:context=MavenCubicCustomerWS-0.0.2,endpoint=Customer" />
+				</action>
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="ACT0">
+					<property name="message" value="IN--->" />
+					<property name="printfull" value="true" />
+				</action>
+				<action class="org.jboss.soa.esb.actions.soap.SOAPProcessor"
+					name="Act1">
+					<property name="jbossws-endpoint" value="Customer" />
+					<property name="rewrite-endpoint-url" value="false" />
+				</action>
+				<action class="org.jboss.soa.esb.actions.SystemPrintln" name="ACT2">
+					<property name="message" value="OUT--->" />
+					<property name="printfull" value="true" />
+				</action>
+			</actions>
+		</service>
+	</services>
+</jbossesb>
